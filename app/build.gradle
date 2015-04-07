@@ -1,0 +1,48 @@
+apply plugin: 'android-library'
+
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
+    }
+    sourceSets {
+        main {
+            java {
+                srcDir 'src/main/java'
+            }
+            resources {
+                srcDir 'src/../lib'
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    task clearJar(type: Delete) {
+        delete 'build/libs/' + getName() + '_' + getVersion() + '.jar'
+    }
+
+    task makeJar(type: Copy) {
+        from('build/bundles/release/')
+        into('release/')
+        include('classes.jar')
+        rename ('classes.jar', getName() + '_' +  getVersion() + '.jar')
+    }
+
+    makeJar.dependsOn(clearJar, build)
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+}
